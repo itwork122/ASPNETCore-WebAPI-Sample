@@ -1,20 +1,15 @@
-# Use the official .NET SDK image to build the application
+# Stage 1: Build the app
 FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build
-WORKDIR /app
+WORKDIR /src
 
-# Copy csproj and restore as distinct layers
-COPY *.csproj ./
+# Copy everything and restore
+COPY . . 
 RUN dotnet restore
+RUN dotnet publish -c Release -o /app/publish
 
-# Copy everything else and build
-COPY . ./
-RUN dotnet publish -c Release -o out
-
-# Use the runtime image for the final stage
+# Stage 2: Run the app
 FROM mcr.microsoft.com/dotnet/aspnet:7.0
 WORKDIR /app
-COPY --from=build /app/out .
+COPY --from=build /app/publish .
 
-# Expose the default port
-EXPOSE 80
 ENTRYPOINT ["dotnet", "ASPNETCore-WebAPI-Sample.dll"]
