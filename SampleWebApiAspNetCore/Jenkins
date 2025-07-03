@@ -1,0 +1,36 @@
+pipeline {
+    agent any
+
+    environment {
+        REPO_URL = 'https://github.com/itwork122/ASPNETCore-WebAPI-Sample.git'
+        FOLDER_NAME = 'ASPNETCore-WebAPI-Sample'
+        PROJECT_DIR = 'SampleWebApiAspNetCore'
+    }
+
+    stages {
+        stage('Clone') {
+            steps {
+                sh "rm -rf $FOLDER_NAME"
+                sh "git clone ${REPO_URL}"
+            }
+        }
+
+        stage('Build') {
+            steps {
+                dir("${FOLDER_NAME}/${PROJECT_DIR}") {
+                    sh 'docker-compose down --remove-orphans || true'
+                    sh 'docker container prune --force || true'
+                    sh 'docker image prune --force || true'
+                }
+            }
+        }
+
+        stage('Deploy') {
+            steps {
+                dir("${FOLDER_NAME}/${PROJECT_DIR}") {
+                    sh 'docker-compose -f docker-compose.yml up -d '
+                }
+            }
+        }
+    }
+}
