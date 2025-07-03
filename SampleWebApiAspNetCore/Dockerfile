@@ -1,15 +1,23 @@
-# Stage 1: Build the app
+# Stage 1: Build
 FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build
-WORKDIR /src
-
-# Copy everything and restore
-COPY . . 
-RUN dotnet restore
-RUN dotnet publish -c Release -o /app/publish
-
-# Stage 2: Run the app
-FROM mcr.microsoft.com/dotnet/aspnet:7.0
 WORKDIR /app
-COPY --from=build /app/publish .
 
+# Copy .csproj and restore as distinct layers
+COPY *.csproj ./
+RUN dotnet restore
+
+# Copy the rest of the source code
+COPY . ./
+
+# Build the project
+RUN dotnet publish -c Release -o out
+
+# Stage 2: Runtime
+FROM mcr.microsoft.com/dotnet/aspnet:7.0 AS runtime
+WORKDIR /app
+
+# Copy published output from build stage
+COPY --from=build /app/out ./
+
+# Set the entry point for the container
 ENTRYPOINT ["dotnet", "SampleWebApiAspNetCore.dll"]
