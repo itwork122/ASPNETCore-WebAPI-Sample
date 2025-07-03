@@ -4,7 +4,7 @@ services:
   webapi:
     build: .
     ports:
-      - "4041:4041"  # Map container port 80 to host port 4041
+      - "4041:80"  # Map container port 80 to host port 4041
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
 
