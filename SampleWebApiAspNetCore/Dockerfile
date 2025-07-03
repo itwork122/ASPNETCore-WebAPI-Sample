@@ -12,4 +12,4 @@ FROM mcr.microsoft.com/dotnet/aspnet:7.0
 WORKDIR /app
 COPY --from=build /app/publish .
 
-ENTRYPOINT ["dotnet", "ASPNETCore-WebAPI-Sample.dll"]
+ENTRYPOINT ["dotnet", "SampleWebApiAspNetCore.dll"]
